@@ -23,6 +23,8 @@ public class Main extends Thread {
 
     /**
      * @param args
+     *            0 - is the filename where you will find the siglent's outputs
+     *            1 - is the name of the file with the instructions
      * @throws IOException
      */
 
@@ -42,14 +44,13 @@ public class Main extends Thread {
 
     String instructions;
 
-    static String address;
+    static String outputAddress;
     static String filename = "inst";
 
     public static void main(String[] args) throws IOException {
 
-	
 	if ( args.length > 0 ) {
-	    address = args[0];
+	    outputAddress = args[0];
 	}
 	if ( args.length > 1 ) {
 	    filename = args[1];
@@ -62,13 +63,13 @@ public class Main extends Thread {
     public void run() {
 
 	try {
-	    s = new Siglent( address );
-	    connectionTest( address );
+	    s = new Siglent( outputAddress );
+	    getChannelInfo();
 
 	    fileReader = new Scanner( new File( filename ) );
 	    frOpen = true;
 	} catch ( IOException e1 ) {
-	    
+
 	    e1.printStackTrace();
 	}
 
@@ -78,7 +79,7 @@ public class Main extends Thread {
 	f.setBackground( Color.white );
 	f.setSize( 800, 500 );
 
-	/* Overall BorderLayout  */
+	/* Overall BorderLayout */
 	cont = f.getContentPane();
 	cont.setLayout( new BorderLayout() );
 
@@ -148,7 +149,8 @@ public class Main extends Thread {
 	bContinue = new Button( "Start" ) {
 
 	    /**
-	     * 
+	     * this part is to override borderlayout locking the size of the
+	     * button
 	     */
 	    private static final long serialVersionUID = -1749965528134606026L;
 
@@ -162,6 +164,10 @@ public class Main extends Thread {
 	    @Override
 	    public void actionPerformed(ActionEvent e) {
 
+		/*
+		 * When button is pressed, it will read the next set of
+		 * instructions from the file
+		 */
 		// TODO Auto-generated method stub
 		bContinue.setVisible( false );
 		bContinue.setLabel( "Confirm your readings and go on to next step" );
@@ -199,29 +205,36 @@ public class Main extends Thread {
 
     }
 
-    public void connectionTest(String addrs) throws IOException, UnsupportedEncodingException {
+    public void getChannelInfo() throws IOException, UnsupportedEncodingException {
 
+	/*
+	 * queries the siglent device for the current infomation about it's
+	 * channels
+	 */
 	chData1 = new ChannelData( s.writeRead( "C2:BSWV?" ) );
 
 	chData2 = new ChannelData( s.writeRead( "C1:BSWV?" ) );
 
     }
 
-    public void clearSiglent() throws IOException {
-
-    }
-
     public void update() throws IOException, UnsupportedEncodingException {
 
-	connectionTest( address );
+	/* gets channel info from the device and updates the ui */
+
+	getChannelInfo();
 	panel0DataCells[0].setText( chData1.frequency );
+
+	/* get freq and convert it to m/s */
 	double frequency = Double.parseDouble( chData1.frequency.substring( 0, chData1.frequency.length() - 2 ) );
 	panel0DataCells[1].setText( Conversions.freqToMS( frequency ) );
+
+	/* get amp and convert to direction sector and degree */
 	double amp = Double.parseDouble( chData2.offset.substring( 0, chData2.offset.length() - 1 ) );
 	panel1DataCells[0].setText( chData2.offset );
 	panel1DataCells[1].setText( Conversions.sectorToDegree( Integer.parseInt( Conversions.ampToDirSect( amp ) ) ) );
 	panel1DataCells[2].setText( Conversions.ampToDirSect( amp ) );
 
+	/* update user instructions */
 	instructions = "Please check the readings on the bench reader and confirm that they are equal to the output you see below.";
 	jlInstructions.setText( "<div align=center><h1>Siglent</h1>" + instructions + "</div>" );
 
@@ -231,7 +244,10 @@ public class Main extends Thread {
     public void readInstructionsFromFile() throws IOException {
 
 	String command = "";
-
+	/*
+	 * this will read through the file line by line until it finds the word
+	 * step. the loop will be broken and the ui will be updated
+	 */
 	while ( frOpen && fileReader.hasNext() && !command.equals( "STEP" ) ) {
 	    if ( frOpen && fileReader.hasNext() ) {
 		command = fileReader.nextLine();

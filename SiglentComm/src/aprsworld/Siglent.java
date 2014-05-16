@@ -9,27 +9,29 @@ import java.io.UnsupportedEncodingException;
 
 public class Siglent {
 
-    String device;
+    String outputAddress;
     PrintWriter writer;
     BufferedReader br;
 
-    public Siglent(String dev) {
+    public Siglent(String outAdd) {
 
-	device = dev;
+	outputAddress = outAdd;
 
     }
 
+    /* This method writes the query to the siglent device */
     public void write(String query) throws FileNotFoundException, UnsupportedEncodingException {
 
-	writer = new PrintWriter( device, "ASCII" );
+	writer = new PrintWriter( outputAddress, "ASCII" );
 
 	writer.println( query );
 	writer.close();
     }
 
+    /* reads the responses from the siglent device. */
     public String read() throws IOException {
 
-	br = new BufferedReader( new FileReader( device ) );
+	br = new BufferedReader( new FileReader( outputAddress ) );
 
 	String line = br.readLine();
 
@@ -37,25 +39,15 @@ public class Siglent {
 	return line;
     }
 
-    public String clear() throws IOException {
-
-	
-	
-	while (br.readLine() != null ) {
-	   
-	}
-
-	return "ok";
-    }
-
+    /* a combination of the write and read function. */
     public String writeRead(String query) throws IOException {
 
-	writer = new PrintWriter( device, "UTF-8" );
+	writer = new PrintWriter( outputAddress, "UTF-8" );
 
 	writer.println( query );
 	writer.close();
 
-	br = new BufferedReader( new FileReader( device ) );
+	br = new BufferedReader( new FileReader( outputAddress ) );
 
 	String line = br.readLine();
 

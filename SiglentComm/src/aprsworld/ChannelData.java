@@ -34,13 +34,7 @@ public class ChannelData {
 		duty = splitData[i + 1];
 	    }
 	}
-	// System.out.println( "channel= " + channel );
-	// System.out.println( "wavetype= " + waveType );
-	// System.out.println( "freq= " + frequency );
-	// System.out.println( "amp= " + amplitude );
-	// System.out.println( "offset= " + offset );
-	// System.out.println( "phase= " + phase );
-	// System.out.println( "duty= " + duty );
+
     }
 
 }
