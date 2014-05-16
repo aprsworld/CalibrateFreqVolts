@@ -78,7 +78,7 @@ public class Main extends Thread {
 	f.setBackground( Color.white );
 	f.setSize( 800, 500 );
 
-	/* Overall BorderLayout */
+	/* Overall BorderLayout  */
 	cont = f.getContentPane();
 	cont.setLayout( new BorderLayout() );
 
@@ -222,7 +222,7 @@ public class Main extends Thread {
 	panel1DataCells[1].setText( Conversions.sectorToDegree( Integer.parseInt( Conversions.ampToDirSect( amp ) ) ) );
 	panel1DataCells[2].setText( Conversions.ampToDirSect( amp ) );
 
-	instructions = "Place holder instructions are neat-o";
+	instructions = "Please check the readings on the bench reader and confirm that they are equal to the output you see below.";
 	jlInstructions.setText( "<div align=center><h1>Siglent</h1>" + instructions + "</div>" );
 
 	bContinue.setVisible( true );
